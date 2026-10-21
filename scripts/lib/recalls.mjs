@@ -77,7 +77,7 @@ async function caseRow(db,id){
 function open(c){if(c.state!=='open')throw Error('Campaign is closed');}
 function active(r){if(['complete','imported'].includes(r.state))throw Error('Case is not active; reconcile or reopen first');}
 async function event(db,cid,rid,action,actor,reference){await db.query('insert into activity(campaign_id,case_id,action,actor,reference) values($1,$2,$3,$4,$5)',[cid,rid,action,actor,reference]);}
-async function tx(db,fn,dry=false){await db.exec('BEGIN');try{const v=await fn();await db.exec(dry?'ROLLBACK':'COMMIT');return v;}catch(e){await db.exec('ROLLBACK');throw e;}}
+async function tx(db,fn,dry=false,readOnly=false){await db.exec(readOnly?'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY':'BEGIN');try{const v=await fn();await db.exec(dry?'ROLLBACK':'COMMIT');return v;}catch(e){await db.exec('ROLLBACK');throw e;}}
 function saveDraft(name,body){const dir=path.resolve(process.env.OUTPUT_DIR||REPO_ROOT,'drafts');fs.mkdirSync(dir,{recursive:true,mode:0o700});const file=path.join(dir,`${name}-${randomUUID()}.md`);fs.writeFileSync(file,body,{mode:0o600,flag:'wx'});return {file};}
 
 async function importCsv(db,file,o){
@@ -89,6 +89,7 @@ async function importCsv(db,file,o){
  });
  return tx(db,async()=>{
   const c=await find(db,'campaigns',req(o,'campaign'),'code',true);open(c);let inserted=0,skipped=0;
+  for(const row of records)if(row.due<c.started_on)throw Error('Imported follow-up predates campaign');
   for(const row of records){
    const fingerprint=createHash('sha256').update(JSON.stringify({...row,campaign:c.id})).digest('hex');
    const old=(await db.query('select * from recall_cases where external_id=$1',[row.external]))[0];
@@ -120,8 +121,8 @@ export async function run(db,cmd,args=[],o={}){
   const data={format:'vehicle-recalls-v1',exported_at:new Date().toISOString()},counts={};
   for(const t of TABLES){data[t]=await db.query(`select * from ${t} order by id`);counts[t]=data[t].length;}
   const file=path.resolve(req(o,'file'));fs.mkdirSync(path.dirname(file),{recursive:true,mode:0o700});fs.writeFileSync(file,JSON.stringify(data,null,2)+'\n',{mode:0o600,flag:'wx'});return {file,counts};
- });
- if(cmd==='weekly-review')return tx(db,async()=>{let body='# Weekly recall handover\n\nInternal draft. Demo records are fictional. No regulatory submission.\n';for(const k of ['recall-triage','report-due','compliance'])body+=`\n## ${k}\n\n`+JSON.stringify(await db.query(READS[k]),null,2)+'\n';return saveDraft('weekly-review',body);});
+ },false,true);
+ if(cmd==='weekly-review')return tx(db,async()=>{let body='# Weekly recall handover\n\nInternal draft. Demo records are fictional. No regulatory submission.\n';for(const k of ['recall-triage','report-due','compliance'])body+=`\n## ${k}\n\n`+JSON.stringify(await db.query(READS[k]),null,2)+'\n';return saveDraft('weekly-review',body);},false,true);
  if(cmd==='draft-follow-up'){const r=await run(db,'case',args);return saveDraft('follow-up',`# Internal follow-up worksheet\n\nNot an owner notice or repair instruction. Use only the approved campaign wording after review. Nothing sends.\n\n${JSON.stringify(r,null,2)}\n`);}
  return tx(db,async()=>{
   const actor=req(o,'actor');

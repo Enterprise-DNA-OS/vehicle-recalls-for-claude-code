@@ -73,6 +73,7 @@ try{
  assert.equal((await db.query("select * from recall_cases where external_id='SF-DEMO-103'")).length,0);
  assert.equal((await db.query("select * from vehicles where vin='TST00000000000103'")).length,0);
  fs.writeFileSync(bad,text.replace('2099-01-01','2026-02-31'));await fails('import',['salesforce',bad],opts,/Invalid ISO/);
+ fs.writeFileSync(bad,text.replace('2099-01-01','2020-01-01'));await fails('import',['salesforce',bad],opts,/predates campaign/);
  await fails('import',['salesforce',csv],{...opts,dryrun:true},/Unknown flag/);
  await fails('import',['salesforce',csv],{...opts,'dry-run':'false'},/takes no value/);
  assert.equal(parseCsv('\ufeffA,B\r\n"one\ntwo","a""b"\r\n')[0].B,'a"b');
