@@ -8,7 +8,11 @@
       {
         "title": "Campaign totals",
         "note": "Review against the official campaign scope before submission through the approved channel. This is not a filed report.",
-        "sql": "select * from campaign_summary where id=$1"
+        "sql": "select code,title,jurisdiction,kind,owner,state from campaign_summary where id=$1"
+      },
+      {
+        "title": "Progress counts and dates",
+        "sql": "select affected,complete,active,imported,overdue,report_due,notification_on from campaign_summary where id=$1"
       },
       {
         "title": "Affected vehicles",

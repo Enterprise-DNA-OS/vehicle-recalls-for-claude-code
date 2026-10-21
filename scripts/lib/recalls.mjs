@@ -6,7 +6,7 @@ import {parseCsv,pick} from './csv.mjs';
 
 export const TABLES=['campaigns','dealers','vehicles','recall_cases','contact_attempts','remedies','progress_reports','activity'];
 export const READS={
- campaigns:'select * from campaign_summary order by code',
+ campaigns:'select code,owner,affected,complete,active,imported,overdue,report_due from campaign_summary order by code',
  vehicles:'select vin,model,owner_ref,region from vehicles order by vin',
  dealers:'select name,region,evidence_ref from dealers order by name',
  cases:'select campaign,vin,coordinator,dealer,state,due_on from case_work order by campaign,vin',

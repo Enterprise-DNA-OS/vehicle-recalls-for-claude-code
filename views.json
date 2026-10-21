@@ -6,7 +6,7 @@
     "sections": [
       {
         "title": "Campaigns",
-        "sql": "select * from campaign_summary order by code"
+        "sql": "select code,owner,affected,complete,active,imported,overdue,report_due from campaign_summary order by code"
       },
       {
         "title": "Needs attention",
