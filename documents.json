@@ -1,11 +1,61 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
-    "file": "name",
+    "name": "campaign-progress",
+    "title": "Internal recall progress worksheet",
+    "for_each": "select id,code from campaigns order by code",
+    "file": "code",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Campaign totals",
+        "note": "Review against the official campaign scope before submission through the approved channel. This is not a filed report.",
+        "sql": "select * from campaign_summary where id=$1"
+      },
+      {
+        "title": "Affected vehicles",
+        "sql": "select vin,coordinator,dealer,state,due_on,last_contact from case_work where campaign_id=$1 order by vin"
+      },
+      {
+        "title": "Recorded submissions",
+        "sql": "select reported_on,reference,actor,snapshot from progress_reports where campaign_id=$1 order by reported_on,id"
+      }
+    ]
+  },
+  {
+    "name": "dealer-handoff",
+    "title": "Internal dealer handoff worksheet",
+    "for_each": "select id,vin from case_work order by vin,id",
+    "file": "vin",
+    "sections": [
+      {
+        "title": "Vehicle and campaign",
+        "note": "No repair instructions. The authorised dealer uses the official manufacturer procedure.",
+        "sql": "select campaign,vin,model,owner_ref,dealer,coordinator,state,appointment_on from case_work where id=$1"
+      },
+      {
+        "title": "Contact history",
+        "sql": "select contacted_on,outcome,reference,actor from contact_attempts where case_id=$1 order by contacted_on,id"
+      }
+    ]
+  },
+  {
+    "name": "remedy-evidence",
+    "title": "Remedy evidence and verification record",
+    "for_each": "select id,vin from case_work order by vin,id",
+    "file": "vin",
+    "sections": [
+      {
+        "title": "Vehicle",
+        "note": "A record of supplied evidence. This document does not certify vehicle safety.",
+        "sql": "select campaign,vin,dealer,state from case_work where id=$1"
+      },
+      {
+        "title": "Evidence",
+        "sql": "select performed_on,evidence_ref,recorded_by,decision,verified_by,verification_ref from remedies where case_id=$1 order by created_at,id"
+      },
+      {
+        "title": "History",
+        "sql": "select action,actor,reference,created_at from activity where case_id=$1 order by created_at,id"
+      }
     ]
   }
 ]

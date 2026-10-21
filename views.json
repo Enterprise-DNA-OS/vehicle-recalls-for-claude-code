@@ -1,13 +1,40 @@
 [
   {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Vehicle Recalls for Claude Code: what needs attention, rendered by npm run view",
+    "title": "Recall work this week",
+    "subtitle": "Fictional demo records until replaced with your data",
     "sections": [
       {
+        "title": "Campaigns",
+        "sql": "select * from campaign_summary order by code"
+      },
+      {
         "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "sql": "select campaign,vin,coordinator,dealer,due_on,reason from attention_queue order by due_on,vin,reason"
+      }
+    ]
+  },
+  {
+    "name": "dealers",
+    "title": "Dealer handoffs",
+    "sections": [
+      {
+        "title": "Outstanding work",
+        "sql": "select campaign,vin,dealer,state,appointment_on from case_work where state<>'complete' order by dealer nulls first,vin"
+      }
+    ]
+  },
+  {
+    "name": "evidence",
+    "title": "Evidence review",
+    "sections": [
+      {
+        "title": "Record checks",
+        "sql": "select * from compliance_checks order by record,rule"
+      },
+      {
+        "title": "Remedies waiting for verification",
+        "sql": "select w.campaign,w.vin,m.performed_on,m.recorded_by,m.evidence_ref from remedies m join case_work w on w.id=m.case_id where m.decision='pending' order by w.campaign,w.vin"
       }
     ]
   }

@@ -1,0 +1,3 @@
+Case ID,VIN,Model,Owner Reference,Region,Coordinator,Follow-up Date,Status
+SF-DEMO-101,TST00000000000101,Demo Ute,owner://101,Sydney,Mia Chen,2099-01-01,Completed
+SF-DEMO-102,TST00000000000102,"Demo Van, long",owner://102,Sydney,Noah Reed,2099-01-02,Open

@@ -1,115 +1,123 @@
-<h1 align="center">Vehicle Recalls for Claude Code</h1>
+# Vehicle Recalls for Claude Code
 
-<p align="center">
-  <strong>The open-source vehicle recall desk that is just a database and Claude Code.</strong>
-</p>
+The open-source vehicle recall desk that is just a database and Claude Code. Built by Enterprise DNA. Works with Claude Code, Codex, OpenCode or Cursor.
 
-<p align="center">
-  Created by <a href="https://www.enterprisedna.co"><strong>Enterprise DNA</strong></a>. Free and open source. Works with Claude Code, Codex, OpenCode or Cursor.
-</p>
+| Do it yourself | We customise it | We run it for you |
+|---|---|---|
+| Free, MIT. Follow the quick start below. | Your fields, evidence rules and Salesforce history. [Book a call](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=salesforce-automotive-cloud). | Installed and operated through Omni by Enterprise DNA. One setup fee, then a retainer. [See the offer](https://enterprisedna.co/omni/instead-of/salesforce-automotive-cloud?utm_source=github&utm_medium=readme&utm_campaign=salesforce-automotive-cloud). |
 
-<!-- three-doors -->
-<table align="center">
-  <tr>
-    <td align="center"><strong>Do it yourself</strong><br/>Clone it, run it, own it. Free, MIT.<br/><a href="#quick-start">Quick start</a></td>
-    <td align="center"><strong>We customise it</strong><br/>Your fields, your rules, your Salesforce Automotive Cloud data brought across.<br/><a href="https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=salesforce-automotive-cloud">Book a call</a></td>
-    <td align="center"><strong>We run it for you</strong><br/>Installed, connected and operated inside Omni. Setup fee, then a retainer.<br/><a href="https://enterprisedna.co/omni/instead-of/salesforce-automotive-cloud?utm_source=github&utm_medium=readme&utm_campaign=salesforce-automotive-cloud">How it works</a></td>
-  </tr>
-</table>
+## The bill and the scope
 
-<p align="center">
-  <a href="#what-is-this">What is this</a> &bull;
-  <a href="#why-no-front-end">Why no front end</a> &bull;
-  <a href="#quick-start">Quick start</a> &bull;
-  <a href="#the-commands">Commands</a> &bull;
-  <a href="#instead-of-salesforce-automotive-cloud">Instead of Salesforce Automotive Cloud</a> &bull;
-  <a href="#want-it-installed-and-run-for-you">Installed for you</a> &bull;
-  <a href="#license">License</a>
-</p>
+Salesforce's Automotive Cloud Core list price is US$300 per user/month, billed annually. Twenty-five Core seats model US$90,000 a year before add-ons. This is a list-price scenario, not a verified customer invoice or savings promise. [Salesforce pricing](https://www.salesforce.com/automotive/pricing/), checked 21 October 2026.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Node-20+-339933?style=flat-square" alt="Node 20+" />
-  <img src="https://img.shields.io/badge/PostgreSQL-any-336791?style=flat-square" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/PGlite-embedded-3ecf8e?style=flat-square" alt="PGlite" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="MIT License" />
-</p>
-
----
-
-## What is this
-
-Vehicle Recalls for Claude Code does the job you pay Salesforce Automotive Cloud for, as a Postgres database and a set of agent commands. There is no web front end. You open the folder in [Claude Code](https://claude.com/claude-code) (or Codex, OpenCode, Cursor: see `AGENTS.md`) and ask for what you want in plain language. It runs the right query, and it can answer questions the Salesforce Automotive Cloud dashboard cannot.
-
-<!-- TODO(author): the annual bill. One sentence: what a 10 to 50 person business typically pays Salesforce Automotive Cloud per year, all in, with a source. -->
-
-Want the same thing with a web front end, or built on a different stack? That is a customisation, and it is exactly what Enterprise DNA does: [book a call](https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=salesforce-automotive-cloud).
-
-<!-- TODO(author): two or three sentences on what this specific product covers and who it is for. -->
-
-## Why no front end
-
-- The front end was only ever there because the database was hard to talk to. That is no longer true.
-- Your data sits in plain Postgres tables you own. Any tool can read them. No export, no lock-in.
-- No seats, no tiers, no add-ons. Read [docs/why-no-front-end.md](docs/why-no-front-end.md) for the honest trade-offs too.
+This build covers the recall coordinator's desk: affected vehicles, campaign references, contact history, dealer assignments, remedy evidence and reporting dates. Automotive Cloud includes much more. The supplier retains safety decisions, approved recall wording, repair procedures and regulatory reporting. No command sends a message or files a report.
 
 ## Quick start
-
-Sixty seconds, no database install (an embedded Postgres runs inside Node):
 
 ```bash
 git clone https://github.com/Enterprise-DNA-OS/vehicle-recalls-for-claude-code.git
 cd vehicle-recalls-for-claude-code
 npm install
+npm test
 npm run demo
+npm run view
+npm run docs
 ```
 
-Then open the folder in Claude Code and type a slash command. <!-- TODO(author): name the first command to try. -->
+Node 20 or later. PGlite runs locally without a server. DATABASE_URL selects a dedicated PostgreSQL 15+ database; DATA_DIR selects local storage. Use a fresh database and npm run migrate for business records. Demo vehicles, people and campaign references are fictional. Never mix demo records into operational data.
 
-### Use it with your own Postgres or Supabase
+## Five weekly rituals
 
-Copy `.env.example` to `.env`, set `DATABASE_URL`, then `npm run migrate`. Same commands, shared data, no per-seat fee.
+Triage affected vehicles, chase outstanding contact, reconcile dealer handoffs, verify remedy evidence and review campaign reporting. /weekly-review reads three current reports and drafts the Monday handover locally.
 
-## The commands
+## Commands
 
-<!-- TODO(author): a table of the slash commands in .claude/commands and what each one does. -->
+33 CLI commands and 37 slash recipes. [Full syntax](docs/cli.md).
 
-| Command | What it does |
-|---|---|
-| `/...` | ... |
+- /campaigns: Read campaign totals and reporting dates.
+- /vehicles: Read the affected vehicle register.
+- /dealers: Read authorised dealer references.
+- /cases: Read affected cases and their status.
+- /case: Read one vehicle case, evidence and contact history.
+- /recall-triage: Triage unresolved affected vehicles.
+- /contact-chase: Find vehicle owners needing a follow-up.
+- /dealer-handoffs: Review dealer assignments and appointments.
+- /remedy-review: Review evidence waiting for an independent verifier.
+- /report-due: Check agreed campaign report dates.
+- /attention: Find overdue, unassigned and unreconciled work.
+- /compliance: Check evidence and cited recall record rules.
+- /activity: Read the recorded activity history.
+- /insights: Answer ten cross-record questions.
+- /add-campaign: Register an approved recall campaign.
+- /add-dealer: Record an authorised dealer and supporting reference.
+- /add-vehicle: Register a verified affected vehicle.
+- /add-case: Link a verified affected vehicle to a campaign.
+- /activate: Reconcile an imported record into active work.
+- /assign-dealer: Assign an authorised dealer with handoff evidence.
+- /record-contact: Record a contact that already happened.
+- /schedule-remedy: Record an appointment agreed with the dealer.
+- /record-remedy: Record a dealer supplied remedy evidence reference.
+- /verify-remedy: Record the separate reviewers evidence decision.
+- /reopen: Reopen completed work after an authorised review.
+- /notification: Record an official notification already submitted.
+- /campaign-report: Record a submitted progress report and next agreed date.
+- /close-campaign: Record an authorised campaign closure decision.
+- /log: Record a follow-up reference.
+- /import: Import one configured Salesforce campaign report.
+- /export: Archive every domain record to a new private file.
+- /weekly-review: Draft the Monday recall handover from three live reads.
+- /draft-follow-up: Draft an internal follow-up worksheet from the full history.
+- /documents: Render branded internal paperwork.
+- /view: Render private snapshots.
+- /new-view: Add a read-only view.
+- /customise: Adapt a field or local rule.
 
-## Instead of salesforce-automotive-cloud
+## Ten questions your desk answers today
 
-<!-- TODO(author): how to bring data across from Salesforce Automotive Cloud; link docs/replace-salesforce-automotive-cloud.md -->
+/insights answers each question from existing data. These are shipped cross-record reports, not a claim that Salesforce cannot be configured to answer them.
 
-## Architecture
+1. Which coordinators have overdue affected vehicles?
+2. Which campaigns combine missing notification evidence with unresolved vehicles?
+3. Which dealers have missed appointments?
+4. Which vehicle owners have had no recorded contact?
+5. Which campaigns have imported completed claims that remain unverified?
+6. Where is remedy evidence waiting on a separate reviewer?
+7. Which regions have unresolved vehicles without a dealer?
+8. Which progress reports are due with unresolved vehicles?
+9. Which vehicles have repeated contact failures?
+10. Which vehicles appear in more than one unresolved campaign?
 
-```
-vehicle-recalls-for-claude-code/
-  CLAUDE.md                 how the operator wants this run (routing table + house rules)
-  AGENTS.md                 the same, for Codex / OpenCode / Cursor / Gemini CLI
-  .claude/commands/         the slash commands
-  scripts/                  the CLI the commands drive
-  scripts/lib/db.mjs        one adapter: DATABASE_URL (pg) or embedded PGlite
-  supabase/migrations/      plain SQL schema
-  supabase/seed.sql         demo data
-  docs/                     the thesis and the migration guide
-```
+## Your first hour: ten things to ask for
 
-## Built for coding agents
+1. Put our business name and logo on the worksheets.
+2. Register our official campaign and source reference.
+3. Import a configured Salesforce report with a dry run.
+4. Compare affected VINs and counts with the source export.
+5. Show which imported records need reconciliation.
+6. Show the unassigned dealer handoffs.
+7. Record the outcome of a contact already completed.
+8. Prepare the progress worksheet from the current records.
+9. Add our business-unit field through /customise.
+10. Add a read-only view for the next reporting meeting.
 
-The database, CLI and command recipes work with Claude Code, Codex, OpenCode or Cursor. Ask your coding agent for a new command and have it implement and test the change against the same records.
+## Evidence, import and ownership
 
-## Contributing
+A source Completed status stays imported until reconciled. An assigned dealer and dated evidence are required before remedy verification. The verifier label must differ from the recorder. Every affected case must be complete before a campaign closes. [Rules and sources](docs/compliance.md).
 
-Issues and pull requests are welcome. Keep the shape: plain SQL, a small CLI, a slash command per recurring job, no front end.
+An authorised administrator configures a Details Only CSV report for each campaign. One import command validates the file, rolls back errors and skips identical source rows. Attachments, permissions, existing communications and other suite functions need separate migration work. [Switching guide](docs/replace-salesforce-automotive-cloud.md).
 
-## Want it installed and run for you?
+npm run docs renders internal campaign progress, dealer handoff and remedy evidence documents. npm run view renders the week, dealers and evidence dashboards. brand.json controls their identity. /new-view adds a read-only report; /customise changes the model through a migration. [Why no front end](docs/why-no-front-end.md).
 
-Enterprise DNA installs Vehicle Recalls for Claude Code for your business, migrates your Salesforce Automotive Cloud data, connects it to the rest of your tools, and runs it for you as part of **Omni**, our managed Command Center. One setup fee, then a monthly retainer.
+The free version uses a local trusted operator or dedicated database owner. Actor labels are not authenticated identities, and the activity record is not tamper-proof. A shared installation needs identity, permissions, backups and retention rules. Keep exported data and snapshots private.
 
-- Book a call: [enterprisedna.co/omni/book](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=salesforce-automotive-cloud)
-- Read more: [enterprisedna.co/omni/instead-of/salesforce-automotive-cloud](https://enterprisedna.co/omni/instead-of/salesforce-automotive-cloud?utm_source=github&utm_medium=readme&utm_campaign=salesforce-automotive-cloud)
+## Verification
 
-## License
+npm test uses temporary storage and tests every CLI command, imports, rollback, idempotence, evidence gates, drafts, exports, error exits and HTML escaping. The CI matrix covers Windows and Linux on Node 20 and 22 and a PostgreSQL 17 job. Read the actual CI run before claiming each platform passed.
 
-MIT. Copyright (c) 2026 Enterprise DNA.
+## Your version
+
+Omni by Enterprise DNA brings your Salesforce history across, builds your fields and review rules, connects the systems you need and operates the result. Screens and a different stack can be scoped. One setup fee, then a retainer.
+
+[Book Sam's 30-minute call](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=salesforce-automotive-cloud).
+
+MIT. Copyright 2026 Enterprise DNA. Salesforce is its owner's trademark. This independent project is not affiliated with Salesforce.
